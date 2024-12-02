@@ -5,11 +5,6 @@
 
 using namespace std;
 
-// Comparator function
-bool comp(int a, int b) {
-  return a <= b;
-}
-
 // Function to sort an array
 // using insertion sort
 void insertionSort(int arr[], int n)
@@ -31,16 +26,6 @@ void insertionSort(int arr[], int n)
     }
 }
  
-// A utility function to print
-// an array of size n
-void printArray(int arr[], int n)
-{
-    int i;
-    for (i = 0; i < n; i++)
-        cout << arr[i] << " ";
-    cout << endl;
-}
-
 int part_two( vector<int>& first, vector<int>& second ) {
   int total = 0, winner = 0, similarity = 0;
 
@@ -73,7 +58,6 @@ int part_two( vector<int>& first, vector<int>& second ) {
   }
 
   return total;
-
 }
 
 int part_one( vector<int>& first, vector<int>& second ) {
