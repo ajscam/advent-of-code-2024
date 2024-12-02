@@ -29,6 +29,9 @@ void insertionSort(int arr[], int n)
 int part_two( vector<int>& first, vector<int>& second ) {
   int total = 0, winner = 0, similarity = 0;
 
+
+  //figure out exactly how often each number from the left list appears in the right list.
+  
   auto sec_it = second.begin();
   int count = 0;
   for( auto it = first.begin(); it != first.end(); ++it ) {
@@ -63,6 +66,8 @@ int part_two( vector<int>& first, vector<int>& second ) {
 int part_one( vector<int>& first, vector<int>& second ) {
   int total=0; 
 
+  // Within each pair, figure out how far apart the two numbers are
+
   auto sec_it = second.begin();
   for( auto it = first.begin(); it != first.end(); ++it ) {
     int diff = abs(*sec_it - *it);
@@ -93,13 +98,15 @@ int main(void)
   cout << "Reading input.txt" << endl;
   while(getline(myfile, line)) {
     sscanf(line.data(), "%d %d", &one, &two ); 
-    cout << "one=" << one << ", two=" << two << endl;
+    //cout << "one=" << one << ", two=" << two << endl;
     first.push_back( one );
     second.push_back( two );
   }
-  cout << "Done reading input.txt" << endl;
+  cout << "Done reading input.txt. Sorting." << endl;
+  // Use insertion sort to sort the 2 vectors
   insertionSort(first.data(), first.size());
   insertionSort(second.data(), second.size());
+  cout << "Done sorting." << endl;
 
   cout << "Part One total=" << part_one( first, second ) << endl;
 
