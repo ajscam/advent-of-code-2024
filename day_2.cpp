@@ -3,75 +3,53 @@
 #include <vector>
 #include <sstream>
 
+#include <assert.h>
+
 using namespace std;
 
+#define MAX_INCREASE 3
 
-bool check_descending( const vector<int> &row, int tolerate = 0 ) {
-
-  int num_errors = 0;
-
+bool check_descending( const vector<int> &row ) {
   for( auto it = row.begin(); it != row.end() - 1; ++it ){
     auto next = it+1;
-
-    if ( *next - *it >= 0 || *next - *it < -3 ) {
+    if ( *next - *it >= 0 || *next - *it < -MAX_INCREASE ) {
       return false;
     }
   }
   return true;
 }
-bool check_ascending( const vector<int> &row, int tolerate = 0 ) {
 
-  int num_errors = 0;
+bool check_ascending( const vector<int> &row ) {
   for( auto it = row.begin(); it != row.end() - 1; ++it ){
       auto next = it+1;
-
-      if ( *next - *it <= 0 || *next - *it > 3 ) {
+      if ( *next - *it <= 0 || *next - *it > MAX_INCREASE ) {
         return false;
       }
-  }
-  if( num_errors > tolerate ) {
-      cout << "Not safe!" <<  endl;
   }
   return true;
 }
 
-bool check_safety( const vector<int> &row, const int &tolerate = 0 ) {
-
-#if 1
-  for (int num : row) {
-    cout << num << " ";
-  }
-  cout << endl;
-#endif
+bool check_safety( const vector<int> &row ) {
 
   int len = row.size();
 
   if( len < 2 ) { return false; }
 
-  if( row[1] > row[0] ) {
-    return check_ascending( row, tolerate );
-  } else if( row[1] < row[0] ) {
-    return check_descending( row, tolerate );
+  // First, determine if the list is ascending or descending based
+  // on the first 2 values in the vector
+  
+  int first = row[0];
+  int second = row[1];
+
+  if( second > first ) {
+    return check_ascending( row );
+  } else if( second < first ) {
+    return check_descending( row );
   } else {
-    if( row[2] > row[1] ) {
-      return check_ascending( row, tolerate );
-    } else if( row[2] < row[1] ) {
-      return check_descending( row, tolerate );
-    } else {
-      cout << "Wait a minute.  The levels are equal!" << endl;
-#if 0
-      cout << "Contents of the file:" << endl;
-      for (int num : row) {
-        cout << num << " ";
-      }
-      cout << endl;
-#endif
-      return false;
-    }
+    // The levels are neither an increase or a decrease!
+    return false;
   }
-
   return false;
-
 }
 
 int main() {
@@ -103,23 +81,52 @@ int main() {
     inputFile.close();  // Close the file after reading
 
     int total = 0;
-    // Output the contents of the 2D vector
     for (const auto& row : data) {
-        if( check_safety( row ) ) {
-          total ++;
-        }
+      for (int num : row) {
+        cout << num << " ";
+      }
+      if( check_safety( row ) ) {
+        total ++;
+        cout << ": Safe";
+      } else {
+        cout << ": Unsafe";
+      }
+      cout << endl;
     }
-    cout << "Total number safe: " << total << endl;
+    cout << "Total number safe Part 1: " << total << endl;
+    assert( total == 490 );  //  This is the actual, correct answer.  Assert it here to make sure we don't break anything
 
     total = 0;
-    int tolerate = 1; // The number of levels to allow to tolerate
     for (const auto& row : data) {
-        if( check_safety( row, tolerate ) ) {
+      for (int num : row) {
+        cout << num << " ";
+      }
+        if( check_safety( row ) ) {
           total ++;
+          cout << ": Safe";
+        } else {
+          // Try to make safe by removing a level
+          //
+          // Brute force.  Start at the beginning and remove each 
+          bool safe = false;
+          for( int n=0; n< row.size(); ++n ) {
+            vector<int> copy( row );
+            auto it = copy.begin()+n;
+            auto erased = copy.erase( it ); // remove the n'th  
+            if( check_safety( copy )  ) {
+              total ++;
+              cout << ": Safe removing " << n+1 << " level, " << *erased ;
+              safe = true;
+              break;
+            }
+          }
+          if( ! safe ) { cout << ": Unsafe"; }
+          
         }
+      cout << endl;
     }
-    cout << "Total number safe: " << total << endl;
-
+    cout << "Total number safe Part 2: " << total << endl;
+    assert( total == 536 ); //  This is the actual, correct answer.  Assert it here to make sure we don't break anything
 
     return 0;
 }
